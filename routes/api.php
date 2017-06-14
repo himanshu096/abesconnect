@@ -23,6 +23,6 @@ Route::post('create', 'UserController@store');
 Route::group(['middleware' => 'jwt.auth'], function () {
 
     Route::get('me','UserController@getUser');
-
+    Route::get('skills','UserController@getSkills');
     Route::put('me','UserController@update');
 });
