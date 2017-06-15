@@ -22,7 +22,22 @@ Route::post('create', 'UserController@store');
 
 Route::group(['middleware' => 'jwt.auth'], function () {
 
+    //get loggedin user
     Route::get('me','UserController@getUser');
+    //get skills of user
     Route::get('skills','UserController@getSkills');
+    //set skills of user
+    Route::post('skills','UserController@setSkills');
+    //search user
+    Route::get('search', 'UserController@search');
+    //update user profile
     Route::put('me','UserController@update');
+    //get favourite contacts
+    Route::get('contacts', 'UserController@getContacts');
+    //get projects
+    Route::get('projects', 'UserController@getProjects');
+    //set projects
+    Route::post('projects', 'UserController@setProjects');
+
+
 });

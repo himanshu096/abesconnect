@@ -33,6 +33,15 @@ class User extends Authenticatable
     }
 
     public function skills(){
-        return $this->hasMany(Skills::class);
+        return $this->hasMany(Skill::class);
     }
+
+    public function favouriteContacts(){
+        return $this->belongsToMany(User::class,'favourite_contacts', 'user_id', 'contact_id');
+    }
+
+    public function projects(){
+        return $this->hasMany(Project::class);
+    }
+
 }

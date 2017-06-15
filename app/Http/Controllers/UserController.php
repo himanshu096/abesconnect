@@ -3,7 +3,9 @@
 namespace App\Http\Controllers;
 
 
-use App\Skills;
+use App\FavouriteContact;
+use App\Project;
+use App\Skill;
 use App\User;
 
 use Carbon\Carbon;
@@ -43,7 +45,7 @@ class UserController extends Controller
 
     public function getSkills()
     {
-        $skills =Skills::where('user_id',Auth::id())->get();
+        $skills =Skill::where('user_id',Auth::id())->get();
         return $skills;
     }
 
@@ -87,6 +89,71 @@ class UserController extends Controller
 
         $user->save();
         return $user;
+    }
+
+    public function search(Request $request){
+
+        if ($request->has('id')) {
+            return User::where('id',$request->get('id'))->get();
+        }
+
+        if ($request->has('name')) {
+            return User::where('name', 'like','%'. $request->get('name') .'%')->get();
+        }
+
+    }
+
+    public function getUserById($id){
+        return User::where('id',$id);
+    }
+
+    public function getContacts(){
+        $userID = Auth::id();
+
+
+        $user = Auth::user();
+        return $user->favouriteContacts;
+
+        //todo join query
+        $contacts = User::join('favourite_contacts', 'users.id', '=','favourite_contacts.contact_id')
+            ->where('favourite_contacts.user_id', Auth::id());
+
+
+            //for friend request type
+
+//            ->where(function ($query) use($userID) {
+//                $query->where('favourite_contacts.user_id', $userID)
+//                    ->orWhere('favourite_contacts.contact_id', $userID);
+//            })
+
+
+
+    }
+
+    public function getProjects(){
+        $projects= Project::where('user_id',Auth::id())->get();
+        return $projects;
+
+    }
+
+    public function setProjects(Request $request){
+        $projects= new Project();
+        $projects->project=$request->get('project');
+        $projects->user_id=Auth::id();
+        $projects->save();
+
+        return $projects;
+
+    }
+
+    public function setSkills(Request $request){
+        $skills= new Skill();
+        $skills->skill=$request->get('skill');
+        $skills->user_id=Auth::id();
+        $skills->save();
+
+        return $skills;
+
     }
 
 }
