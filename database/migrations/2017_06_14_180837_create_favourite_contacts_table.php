@@ -16,7 +16,7 @@ class CreateFavouriteContactsTable extends Migration
         Schema::create('favourite_contacts', function (Blueprint $table) {
             $table->increments('fav_id');
             $table->unsignedInteger('user_id');
-            $table->unsignedInteger('contact_id');
+            $table->unsignedInteger('contact_id')->uniqueWith('user_id');
             $table->timestamps();
 
             $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');

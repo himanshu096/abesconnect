@@ -36,4 +36,13 @@ class AuthController extends Controller
 
         return compact('token', 'user');
     }
+
+
+    public function loginFromGoogle(Request $request){
+        $user=User::where('email','=',$request->get('email'));
+        return $user;
+        $token = JWTAuth::fromUser($user);
+        return compact('token', 'user');
+
+    }
 }

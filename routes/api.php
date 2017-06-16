@@ -17,7 +17,10 @@ Route::middleware('auth:api')->get('/user', function (Request $request) {
     return $request->user();
 });
 
+
+
 Route::get('login', 'AuthController@authenticate');
+Route::get('google', 'AuthController@loginFromGoogle');
 Route::post('create', 'UserController@store');
 
 Route::group(['middleware' => 'jwt.auth'], function () {
@@ -28,16 +31,23 @@ Route::group(['middleware' => 'jwt.auth'], function () {
     Route::get('skills','UserController@getSkills');
     //set skills of user
     Route::post('skills','UserController@setSkills');
+    //delete skill of user
+    Route::delete('skills','UserController@removeSkills');
     //search user
     Route::get('search', 'UserController@search');
     //update user profile
     Route::put('me','UserController@update');
     //get favourite contacts
     Route::get('contacts', 'UserController@getContacts');
+    //add contacts
+    Route::post('contacts', 'UserController@addContact');
+    //delete favourite contacts of user
+    Route::delete('contacts','UserController@removeContact');
     //get projects
     Route::get('projects', 'UserController@getProjects');
-    //set projects
-    Route::post('projects', 'UserController@setProjects');
+    //delete project of user
+    Route::delete('projects','UserController@removeProject');
+
 
 
 });

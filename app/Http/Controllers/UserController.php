@@ -2,13 +2,13 @@
 
 namespace App\Http\Controllers;
 
-
-use App\FavouriteContact;
+use App\FavouriteContacts;
 use App\Project;
 use App\Skill;
 use App\User;
 
 use Carbon\Carbon;
+use Illuminate\Http\JsonResponse;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Tymon\JWTAuth\Facades\JWTAuth;
@@ -38,15 +38,23 @@ class UserController extends Controller
     public function getUser()
     {
         $user = Auth::user();
-        $skills=$this->getSkills();
-        return compact('user','skills');
+        $skills = $this->getSkills();
+        return compact('user', 'skills');
 
     }
 
     public function getSkills()
     {
-        $skills =Skill::where('user_id',Auth::id())->get();
+        $skills = Skill::where('user_id', Auth::id())->get();
         return $skills;
+    }
+
+    public function removeSkills(Request $request)
+    {
+        $skills = Skill::find($request->get('skill_id'));
+        $skills->delete();
+
+        return new JsonResponse('Skill deleted','200');
     }
 
     public function update(Request $request)
@@ -91,35 +99,35 @@ class UserController extends Controller
         return $user;
     }
 
-    public function search(Request $request){
+    public function search(Request $request)
+    {
 
         if ($request->has('id')) {
-            return User::where('id',$request->get('id'))->get();
+            return User::where('id', $request->get('id'))->get();
         }
 
         if ($request->has('name')) {
-            return User::where('name', 'like','%'. $request->get('name') .'%')->get();
+            return User::where('name', 'like', '%' . $request->get('name') . '%')->get();
         }
 
     }
 
-    public function getUserById($id){
-        return User::where('id',$id);
+    public function getUserById($id)
+    {
+        return User::where('id', $id);
     }
 
-    public function getContacts(){
-        $userID = Auth::id();
-
-
+    public function getContacts()
+    {
         $user = Auth::user();
         return $user->favouriteContacts;
 
         //todo join query
-        $contacts = User::join('favourite_contacts', 'users.id', '=','favourite_contacts.contact_id')
-            ->where('favourite_contacts.user_id', Auth::id());
+//        $contacts = User::join('favourite_contacts', 'users.id', '=','favourite_contacts.contact_id')
+//            ->where('favourite_contacts.user_id', Auth::id());
 
 
-            //for friend request type
+        //for friend request type
 
 //            ->where(function ($query) use($userID) {
 //                $query->where('favourite_contacts.user_id', $userID)
@@ -127,29 +135,58 @@ class UserController extends Controller
 //            })
 
 
-
     }
 
-    public function getProjects(){
-        $projects= Project::where('user_id',Auth::id())->get();
+    public function addContact(Request $request)
+    {
+        $contact = new FavouriteContacts();
+        $contact->contact_id = $request->get('contact_id');
+        $contact->user_id = Auth::id();
+        $contact->save();
+
+        return $contact;
+    }
+
+    public function removeContact(Request $request)
+    {
+        $contact = FavouriteContacts::where('fav_id','=',$request->get('fav_id'));
+        $contact->delete();
+
+        return new JsonResponse('favourite contact deleted','200');
+    }
+
+
+    public function getProjects()
+    {
+        $projects = Project::where('user_id', Auth::id())->get();
         return $projects;
 
     }
 
-    public function setProjects(Request $request){
-        $projects= new Project();
-        $projects->project=$request->get('project');
-        $projects->user_id=Auth::id();
+    public function setProjects(Request $request)
+    {
+        $projects = new Project();
+        $projects->project = $request->get('project');
+        $projects->user_id = Auth::id();
         $projects->save();
 
         return $projects;
 
     }
 
-    public function setSkills(Request $request){
-        $skills= new Skill();
-        $skills->skill=$request->get('skill');
-        $skills->user_id=Auth::id();
+    public function removeProject(Request $request)
+    {
+        $project = Project::where('project_id','=',$request->get('project_id'));
+        $project->delete();
+
+        return new JsonResponse('project deleted','200');
+    }
+
+    public function setSkills(Request $request)
+    {
+        $skills = new Skill();
+        $skills->skill = $request->get('skill');
+        $skills->user_id = Auth::id();
         $skills->save();
 
         return $skills;
